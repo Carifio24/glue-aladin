@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glue-aladin"
+authors = [
+    {name = "Thomas Robitaille", email = "thomas.robitaille@gmail.com"}
+]
+license = {file = "LICENSE"}
+description = "Glue Aladin Lite plugin"
+readme = "README.rst"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "glue-core>=1.13.1",
+    "echo",
+    "glue-qt",
+    "qtpy",
+    "astropy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "mock",
+]
+qt = [
+    "PyQt6-WebEngine; PyQt6",
+    "PyQtWebEngine; PyQt5",
+]
+
+[project.entry-points."glue.plugins"]
+aladin = "glue_aladin:setup"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.package-data]
+glue_aladin = ["*.ui", "*.html", "*.js", "*.png"]
