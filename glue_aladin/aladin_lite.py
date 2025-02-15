@@ -2,7 +2,7 @@ from qtpy import QtWebEngineWidgets  # noqa: F401
 from qtpy.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 from qtpy.QtWidgets import QWidget, QVBoxLayout
 
-from glue_qt.utils import get_qapp
+from glue_qt.utils import Worker, get_qapp
 
 ALADIN_LITE_HTML = """
 <html>
@@ -68,6 +68,10 @@ class AladinWebEnginePage(QWebEnginePage):
 
 
 class AladinLiteQtWidget(QWidget):
+    
+    _ready = False
+    _queued_js = []
+    _ready_worker = None
 
     def __init__(self, block_until_ready=False, *args, **kwargs):
         super(AladinLiteQtWidget, self).__init__(*args, **kwargs)
@@ -82,13 +86,33 @@ class AladinLiteQtWidget(QWidget):
         self.page = web.page()
 
         if block_until_ready:
-            app = get_qapp()
-            aladin = None
-            while aladin is None:
-                self.run_js("aladin")
-                app.processEvents()
-                aladin = self.page._js_response
+            self._check_for_ready()
+        else:
+            self._ready_worker = Worker(self._check_for_ready)
+            self._ready_worker.start()
 
-    def run_js(self, js):
-        print("Running javascript: " + js)
-        return self.page.runJavaScript(js)
+    def __del__(self):
+        if self._ready_worker is not None and self._ready_worker.isRunning():
+            self._ready_worker.quit()
+
+    def _check_for_ready(self):
+        app = get_qapp()
+        aladin = None
+        while aladin is None:
+            self.run_js("aladin", force_run=True)
+            app.processEvents()
+            aladin = self.page._js_response
+
+        self._ready = True
+        print("Running Queued JS")
+        for js in self._queued_js:
+            self.run_js(js)
+        self._queued_js.clear()
+
+    def run_js(self, js, force_run=False):
+        if not (force_run or self._ready):
+            self._queued_js.append(js)
+            print("Queueing javascript: " + js)
+        else:
+            print("Running javascript: " + js)
+            return self.page.runJavaScript(js)
