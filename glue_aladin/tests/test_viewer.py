@@ -15,12 +15,12 @@ class TestAladinLiteViewer(object):
     def setup_method(self, method):
         self.d = Data(ra=[1, 2, 3], dec=[2, 3, 4], c=[4, 5, 6])
         self.application = GlueApplication()
+        assert False
         self.dc = self.application.data_collection
         self.dc.append(self.d)
         self.hub = self.dc.hub
         self.session = self.application.session
         self.viewer = self.application.new_data_viewer(AladinLiteViewer)
-        sleep(0.5)
 
     def teardown_method(self, method):
         self.viewer.aladin_widget.close()
