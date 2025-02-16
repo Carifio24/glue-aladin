@@ -1,4 +1,3 @@
-from qtpy import QtWebEngineWidgets  # noqa: F401
 from qtpy.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 from qtpy.QtWidgets import QWidget, QVBoxLayout
 

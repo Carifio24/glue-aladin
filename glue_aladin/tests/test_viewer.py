@@ -1,5 +1,3 @@
-from time import sleep
-
 from glue_qt.app import GlueApplication
 from glue.core import Data
 from numpy import allclose
@@ -15,7 +13,6 @@ class TestAladinLiteViewer(object):
     def setup_method(self, method):
         self.d = Data(ra=[1, 2, 3], dec=[2, 3, 4], c=[4, 5, 6])
         self.application = GlueApplication()
-        assert False
         self.dc = self.application.data_collection
         self.dc.append(self.d)
         self.hub = self.dc.hub
